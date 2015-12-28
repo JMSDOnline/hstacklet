@@ -93,7 +93,8 @@ function _depends() {
 
 # package and repo addition (c) _add signed keys_
 function _keys() {
-  apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0x5a16e7281be7a449 >>"${OUTTO}" 2>&1;
+  # this key is one way to add hhvm but it's block adds more mess, i.e; apache, mysql ... etc.
+  # apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0x5a16e7281be7a449 >>"${OUTTO}" 2>&1;
   apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xcbcb082a1bb943db >>"${OUTTO}" 2>&1;
   curl -s http://dl.hhvm.com/conf/hhvm.gpg.key | apt-key add - > /dev/null 2>&1;
   curl -s http://nginx.org/keys/nginx_signing.key | apt-key add - > /dev/null 2>&1;
