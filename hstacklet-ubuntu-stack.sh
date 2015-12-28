@@ -211,6 +211,7 @@ function _hhvm() {
   /usr/share/hhvm/install_fastcgi.sh >>"${OUTTO}" 2>&1;
   update-rc.d hhvm defaults >>"${OUTTO}" 2>&1;
   /usr/bin/update-alternatives --install /usr/bin/php php /usr/bin/hhvm 60 >>"${OUTTO}" 2>&1;
+  service hhvm restart
   # get off the port and use socket - HStacklet nginx configurations already know this
   sed -i.bak -e "s/hhvm.server.port = 9000/hhvm.server.file_socket = /var/run/hhvm/hhvm.sock/" /etc/hhvm/server.ini
   # make an additional request for memory limit
@@ -591,7 +592,6 @@ function _nocert() {
 function _services() {
   service nginx restart >>"${OUTTO}" 2>&1;
   service hhvm restart >>"${OUTTO}" 2>&1;
-  service php5-fpm restart >>"${OUTTO}" 2>&1;
   if [[ $sendmail -eq yes ]];then 
     service sendmail restart >>"${OUTTO}" 2>&1;
   fi
