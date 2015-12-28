@@ -32,7 +32,7 @@ chmod +x *.sh
 cd
 
 # Download VStacklet System Backup Executable
-curl -LO https://raw.githubusercontent.com/JMSDOnline/hstacklet/master/vs-backup >/dev/null 2>&1;
+curl -LO https://raw.githubusercontent.com/JMSDOnline/hstacklet/master/hs-backup >/dev/null 2>&1;
 chmod +x hs-backup
 mv hs-backup /usr/local/bin
 
