@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# [HStacklet HiHop Virtual Machine LEMP Stack Installation Script]
+# [HStacklet HipHopVM LEMP Stack Installation Script]
 #
 # GitHub:   https://github.com/JMSDOnline/hstacklet
 # Author:   Jason Matthews
@@ -26,7 +26,7 @@ function _intro() {
   echo
   echo
   echo "  [${repo_title}hstacklet${normal}] ${title} HHVM LEMP Stack Installation ${normal}  "
-  echo "${alert} Configured and tested for Ubuntu 15.04 & 15.10 ${normal}"
+  echo "${alert} Configured and tested for 15.04 & 15.10 ${normal}"
   echo
   echo
 
@@ -93,7 +93,7 @@ function _depends() {
 
 # package and repo addition (c) _add signed keys_
 function _keys() {
-  apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xcbcb082a1bb943db >>"${OUTTO}" 2>&1;
+  apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0x5a16e7281be7a449 >>"${OUTTO}" 2>&1;
   curl -s http://dl.hhvm.com/conf/hhvm.gpg.key | apt-key add - > /dev/null 2>&1;
   curl -s http://nginx.org/keys/nginx_signing.key | apt-key add - > /dev/null 2>&1;
   echo "${OK}"
@@ -211,27 +211,11 @@ function _hhvm() {
   /usr/share/hhvm/install_fastcgi.sh >>"${OUTTO}" 2>&1;
   update-rc.d hhvm defaults >>"${OUTTO}" 2>&1;
   /usr/bin/update-alternatives --install /usr/bin/php php /usr/bin/hhvm 60 >>"${OUTTO}" 2>&1;
-  echo "${OK}"
-  echo
-}
-
-# install php function (9)
-function _php() {
-  apt-get -y install php5-common php5-mysqlnd php5-curl php5-gd php5-cli php5-fpm php-pear php5-dev php5-imap php5-mcrypt >>"${OUTTO}" 2>&1;
-  sed -i.bak -e "s/post_max_size = 8M/post_max_size = 32M/" \
-    -e "s/upload_max_filesize = 2M/upload_max_filesize = 64M/" \
-    -e "s/expose_php = On/expose_php = Off/" \
-    -e "s/128M/512M/" \
-    -e "s/cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/" \
-    -e "s/;opcache.enable=0/opcache.enable=1/" \
-    -e "s/;opcache.memory_consumption=64/opcache.memory_consumption=128/" \
-    -e "s/;opcache.max_accelerated_files=2000/opcache.max_accelerated_files=4000/" \
-    -e "s/;opcache.revalidate_freq=2/opcache.revalidate_freq=240/" /etc/php5/fpm/php.ini
-  # ensure opcache module is activated
-  php5enmod opcache
-  # ensure mcrypt module is activated
-  php5enmod mcrypt
-  # write checkinfo for php verification
+  # get off the port and use socket - HStacklet nginx configurations already know this
+  sed -i.bak -e "s/hhvm.server.port = 9000/hhvm.server.file_socket = /var/run/hhvm/hhvm.sock/" /etc/hhvm/server.ini
+  # make an additional request for memory limit
+  echo "memory_limit = 512M" >> /etc/hhvm/php.ini
+  echo "expose_php = off" >> /etc/hhvm/php.ini
   if [[ $sitename -eq yes ]];then 
     echo '<?php phpinfo(); ?>' > /srv/www/$sitename/public/checkinfo.php
   else
@@ -241,48 +225,7 @@ function _php() {
   echo
 }
 
-# install ioncube loader function (10)
-function _askioncube() {
-  echo -n "${bold}${yellow}Do you want to install IonCube Loader?${normal} (${bold}${green}Y${normal}/n): "
-  read responce
-  case $responce in
-    [yY] | [yY][Ee][Ss] | "" ) ioncube=yes ;;
-    [nN] | [nN][Oo] ) ioncube=no ;;
-  esac
-}
-
-function _ioncube() {
-  if [[ ${ioncube} == "yes" ]]; then
-    echo -n "${green}Installing IonCube Loader${normal} ... "
-    mkdir tmp 2>&1;
-    cd tmp 2>&1;
-    wget http://downloads3.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz >/dev/null 2>&1;
-    tar xvfz ioncube_loaders_lin_x86-64.tar.gz >/dev/null 2>&1;
-    cd ioncube >/dev/null 2>&1;
-    if [[ ${rel} =~ ("15.04"|"15.10") ]]; then
-      cp ioncube_loader_lin_5.6.so /usr/lib/php5/20131226/ >/dev/null 2>&1;
-      echo -e "zend_extension = /usr/lib/php5/20131226/ioncube_loader_lin_5.6.so" > /etc/php5/fpm/conf.d/20-ioncube.ini
-      echo "zend_extension = /usr/lib/php5/20131226/ioncube_loader_lin_5.6.so" >> /etc/php5/fpm/php.ini
-    elif [[ ${rel} =~ ("14.04") ]]; then
-      cp ioncube_loader_lin_5.5.so /usr/lib/php5/20121212/ >/dev/null 2>&1;
-      echo -e "zend_extension = /usr/lib/php5/20121212/ioncube_loader_lin_5.5.so" > /etc/php5/fpm/conf.d/20-ioncube.ini
-      echo "zend_extension = /usr/lib/php5/20121212/ioncube_loader_lin_5.5.so" >> /etc/php5/fpm/php.ini
-    fi
-    cd
-    rm -rf tmp*
-    echo "${OK}"
-    echo
-  fi
-}
-
-function _noioncube() {
-  if [[ ${ioncube} == "no" ]]; then
-    echo "${cyan}Skipping IonCube Installation...${normal}"
-    echo 
-  fi
-}
-
-# install mariadb function (11)
+# install mariadb function (9)
 function _mariadb() {
   export DEBIAN_FRONTEND=noninteractive
   apt-get -q -y install mariadb-server >>"${OUTTO}" 2>&1;
@@ -290,7 +233,7 @@ function _mariadb() {
   echo
 }
 
-# install phpmyadmin function (12)
+# install phpmyadmin function (10)
 function _askphpmyadmin() {
   echo -n "${bold}${yellow}Do you want to install phpMyAdmin?${normal} (${bold}${green}Y${normal}/n): "
   read responce
@@ -332,7 +275,7 @@ function _phpmyadmin() {
     echo " - pmadbpass='${pmapass}'" >> ~/.my.cnf;
     echo '' >> ~/.my.cnf;
     echo "   Access phpMyAdmin at: " >> ~/.my.cnf;
-    echo "   http://$server_ip/phpmyadmin/" >> ~/.my.cnf;
+    echo "   http://$server_ip:8080/phpmyadmin/" >> ~/.my.cnf;
     echo '' >> ~/.my.cnf;
     echo '' >> ~/.my.cnf;
     # show mysql creds
@@ -359,7 +302,7 @@ function _nophpmyadmin() {
   fi
 }
 
-# install and adjust config server firewall function (13)
+# install and adjust config server firewall function (11)
 function _askcsf() {
   echo -n "${bold}${yellow}Do you want to install CSF (Config Server Firewall)?${normal} (${bold}${green}Y${normal}/n): "
   read responce
@@ -489,7 +432,7 @@ function _cloudflare() {
   fi
 }
 
-# install sendmail function (14)
+# install sendmail function (12)
 function _asksendmail() {
   echo -n "${bold}${yellow}Do you want to install Sendmail?${normal} (${bold}${green}Y${normal}/n): "
   read responce
@@ -549,7 +492,7 @@ function _nosendmail() {
 #################################################################
 
 # Round 1 - Location
-# enhance configuration function (15)
+# enhance configuration function (13)
 function _locenhance() {
   if [[ $sitename -eq yes ]];then 
     locconf1="include hstacklet\/location\/cache-busting.conf;"
@@ -575,7 +518,7 @@ function _locenhance() {
 }
 
 # Round 2 - Security
-# optimize security configuration function (16)
+# optimize security configuration function (14)
 function _security() {
   if [[ $sitename -eq yes ]];then 
     secconf1="include hstacklet\/directive-only\/sec-bad-bots.conf;"
@@ -596,7 +539,7 @@ function _security() {
   echo
 }
 
-# create self-signed certificate function (17)
+# create self-signed certificate function (15)
 function _askcert() {
   echo -n "${bold}${yellow}Do you want to create a self-signed SSL cert and configure HTTPS?${normal} (${bold}${green}Y${normal}/n): "
   read responce
@@ -617,8 +560,6 @@ function _cert() {
              -e "s/# ssl_certificate \/srv\/www\/sitename\/ssl\/sitename.crt;/ssl_certificate \/srv\/www\/sitename\/ssl\/sitename.crt;/" \
              -e "s/# ssl_certificate_key \/srv\/www\/sitename\/ssl\/sitename.key;/ssl_certificate_key \/srv\/www\/sitename\/ssl\/sitename.key;/" /etc/nginx/conf.d/$sitename.conf
       sed -i "s/sitename/$sitename/" /etc/nginx/conf.d/$sitename.conf
-      sed -i "s/sitename_access.log/$sitename_access.log/" /etc/nginx/conf.d/$sitename.conf
-      sed -i "s/sitename_error.log/$sitename_error.log/" /etc/nginx/conf.d/$sitename.conf
     else
       openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /srv/www/$hostname1/ssl/$hostname1.key -out /srv/www/$hostname1/ssl/$hostname1.crt
       chmod 400 /etc/ssl/private/$hostname1.key
@@ -628,8 +569,6 @@ function _cert() {
              -e "s/# ssl_certificate \/srv\/www\/sitename\/ssl\/sitename.crt;/ssl_certificate \/srv\/www\/sitename\/ssl\/sitename.crt;/" \
              -e "s/# ssl_certificate_key \/srv\/www\/sitename\/ssl\/sitename.key;/ssl_certificate_key \/srv\/www\/sitename\/ssl\/sitename.key;/" /etc/nginx/conf.d/$hostname1.conf
       sed -i "s/sitename/$hostname1/" /etc/nginx/conf.d/$hostname1.conf
-      sed -i "s/sitename_access.log/$hostname1_access.log/" /etc/nginx/conf.d/$hostname1.conf
-      sed -i "s/sitename_error.log/$hostname1_error.log/" /etc/nginx/conf.d/$hostname1.conf
     fi
     echo "${OK}"
     echo
@@ -648,7 +587,7 @@ function _nocert() {
   fi
 }
 
-# finalize and restart services function (18)
+# finalize and restart services function (16)
 function _services() {
   service nginx restart >>"${OUTTO}" 2>&1;
   service hhvm restart >>"${OUTTO}" 2>&1;
@@ -719,8 +658,6 @@ _asksitename;if [[ ${sitename} == "yes" ]]; then _sitename; elif [[ ${sitename} 
 echo -n "${bold}Installing and Configuring Nginx${normal} ... ";_nginx
 echo -n "${bold}Adjusting Permissions${normal} ... ";_perms
 echo -n "${bold}Installing and Configuring HHVM${normal} ... ";_hhvm
-#echo -n "${bold}Installing and Adjusting PHP-FPM w/ OPCode Cache${normal} ... ";_php
-#_askioncube;if [[ ${ioncube} == "yes" ]]; then _ioncube; elif [[ ${ioncube} == "no" ]]; then _noioncube;  fi
 echo -n "${bold}Installing MariaDB Drop-in Replacement${normal} ... ";_mariadb
 _askphpmyadmin;if [[ ${phpmyadmin} == "yes" ]]; then _phpmyadmin; elif [[ ${phpmyadmin} == "no" ]]; then _nophpmyadmin;  fi
 _askcsf;if [[ ${csf} == "yes" ]]; then _csf; elif [[ ${csf} == "no" ]]; then _nocsf;  fi
