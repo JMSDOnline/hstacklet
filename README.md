@@ -1,7 +1,7 @@
 HStacklet - A HHVM LEMP Stack Kit
 ==========
 
-| ![HStacklet - A HHVM LEMP Stack Kit](https://github.com/JMSDOnline/vstacklet/blob/master/images/hstacklet-lemp-kit.png "vstacklet") |
+| ![HStacklet - A HHVM LEMP Stack Kit](https://github.com/JMSDOnline/hstacklet/blob/master/images/hstacklet-lemp-kit.png "hstacklet") |
 |---|
 | **HStacklet - A HHVM LEMP Stack Kit** |
 
