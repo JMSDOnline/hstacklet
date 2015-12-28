@@ -176,10 +176,6 @@ function _nginx() {
   mv hstacklet-server-configs /etc/nginx >>"${OUTTO}" 2>&1;
   rm -rf hstacklet-server-configs*
   cp /etc/nginx-previous/uwsgi_params /etc/nginx-previous/fastcgi_params /etc/nginx >>"${OUTTO}" 2>&1;
-  sed -i.bak -e "s/www www/www-data www-data/" \
-    -e "s/logs\/error.log/\/var\/log\/nginx\/error.log/" \
-    -e "s/logs\/access.log/\/var\/log\/nginx\/access.log/" /etc/nginx/nginx.conf
-  sed -i.bak -e "s/logs\/static.log/\/var\/log\/nginx\/static.log/" /etc/nginx/hstacklet/location/expires.conf
   # rename default.conf template
   if [[ $sitename -eq yes ]];then 
     cp /etc/nginx/conf.d/default.conf.save /etc/nginx/conf.d/$sitename.conf
@@ -506,23 +502,15 @@ function _nosendmail() {
 # enhance configuration function (13)
 function _locenhance() {
   if [[ $sitename -eq yes ]];then 
-    locconf1="include hstacklet\/location\/cache-busting.conf;"
-    sed -i "s/locconf1/$locconf1/" /etc/nginx/conf.d/$sitename.conf
-    locconf2="include hstacklet\/location\/cross-domain-fonts.conf;"
-    sed -i "s/locconf2/$locconf2/" /etc/nginx/conf.d/$sitename.conf
-    locconf3="include hstacklet\/location\/expires.conf;"
-    sed -i "s/locconf3/$locconf3/" /etc/nginx/conf.d/$sitename.conf
-    locconf4="include hstacklet\/location\/protect-system-files.conf;"
-    sed -i "s/locconf4/$locconf4/" /etc/nginx/conf.d/$sitename.conf
+    sed -i "s/# include hstacklet\/location\/cache-busting.conf;/include hstacklet\/location\/cache-busting.conf;/" /etc/nginx/conf.d/$sitename.conf
+    sed -i "s/# include hstacklet\/location\/cross-domain-fonts.conf;/include hstacklet\/location\/cross-domain-fonts.conf;/" /etc/nginx/conf.d/$sitename.conf
+    sed -i "s/# include hstacklet\/location\/expires.conf;/include hstacklet\/location\/expires.conf;/" /etc/nginx/conf.d/$sitename.conf
+    sed -i "s/# include hstacklet\/location\/protect-system-files.conf;/include hstacklet\/location\/protect-system-files.conf;/" /etc/nginx/conf.d/$sitename.conf
   else
-    locconf1="include hstacklet\/location\/cache-busting.conf;"
-    sed -i "s/locconf1/$locconf1/" /etc/nginx/conf.d/$hostname1.conf
-    locconf2="include hstacklet\/location\/cross-domain-fonts.conf;"
-    sed -i "s/locconf2/$locconf2/" /etc/nginx/conf.d/$hostname1.conf
-    locconf3="include hstacklet\/location\/expires.conf;"
-    sed -i "s/locconf3/$locconf3/" /etc/nginx/conf.d/$hostname1.conf
-    locconf4="include hstacklet\/location\/protect-system-files.conf;"
-    sed -i "s/locconf4/$locconf4/" /etc/nginx/conf.d/$hostname1.conf
+    sed -i "s/# include hstacklet\/location\/cache-busting.conf;/include hstacklet\/location\/cache-busting.conf;/" /etc/nginx/conf.d/$hostname1.conf
+    sed -i "s/# include hstacklet\/location\/cross-domain-fonts.conf;/include hstacklet\/location\/cross-domain-fonts.conf;/" /etc/nginx/conf.d/$hostname1.conf
+    sed -i "s/# include hstacklet\/location\/expires.conf;/include hstacklet\/location\/expires.conf;/" /etc/nginx/conf.d/$hostname1.conf
+    sed -i "s/# include hstacklet\/location\/protect-system-files.conf;/include hstacklet\/location\/protect-system-files.conf;/" /etc/nginx/conf.d/$hostname1.conf
   fi
   echo "${OK}"
   echo 
@@ -532,19 +520,31 @@ function _locenhance() {
 # optimize security configuration function (14)
 function _security() {
   if [[ $sitename -eq yes ]];then 
-    secconf1="include hstacklet\/directive-only\/sec-bad-bots.conf;"
-    sed -i "s/secconf1/$secconf1/" /etc/nginx/conf.d/$sitename.conf
-    secconf2="include hstacklet\/directive-only\/sec-file-injection.conf;"
-    sed -i "s/secconf2/$secconf2/" /etc/nginx/conf.d/$sitename.conf
-    secconf3="include hstacklet\/directive-only\/sec-php-easter-eggs.conf;"
-    sed -i "s/secconf3/$secconf3/" /etc/nginx/conf.d/$sitename.conf
+    sed -i "s/# include hstacklet\/directive-only\/sec-bad-bots.conf;/include hstacklet\/directive-only\/sec-bad-bots.conf;/" /etc/nginx/conf.d/$sitename.conf
+    sed -i "s/# include hstacklet\/directive-only\/sec-file-injection.conf;/include hstacklet\/directive-only\/sec-file-injection.conf;/" /etc/nginx/conf.d/$sitename.conf
+    sed -i "s/# include hstacklet\/directive-only\/sec-php-easter-eggs.conf;/include hstacklet\/directive-only\/sec-php-easter-eggs.conf;/" /etc/nginx/conf.d/$sitename.conf
+    if [[ $cloudflare -eq yes ]];then 
+      sed -i "s/# include hstacklet\/directive-only\/cloudflare-real-ip.conf;/include hstacklet\/directive-only\/cloudflare-real-ip.conf;/" /etc/nginx/conf.d/$sitename.conf
+    fi
+    sed -i "s/# include hstacklet\/directive-only\/cross-domain-insecure.conf;/include hstacklet\/directive-only\/cross-domain-insecure.conf;/" /etc/nginx/conf.d/$sitename.conf
+    sed -i "s/# include hstacklet\/directive-only\/reflected-xss-prevention.conf;/include hstacklet\/directive-only\/reflected-xss-prevention.conf;/" /etc/nginx/conf.d/$sitename.conf
+    sed -i "s/# include hstacklet\/directive-only\/mime-type-security.conf;/include hstacklet\/directive-only\/mime-type-security.conf;/" /etc/nginx/conf.d/$sitename.conf
+    sed -i "s/# include hstacklet\/directive-only\/common-exploit-prevention.conf;/include hstacklet\/directive-only\/common-exploit-prevention.conf;/" /etc/nginx/conf.d/$sitename.conf
+    sed -i "s/# include hstacklet\/directive-only\/timeout-handling.conf;/include hstacklet\/directive-only\/timeout-handling.conf;/" /etc/nginx/conf.d/$sitename.conf
+    sed -i "s/# include hstacklet\/directive-only\/cache-file-descriptors.conf;/include hstacklet\/directive-only\/cache-file-descriptors.conf;/" /etc/nginx/conf.d/$sitename.conf
   else
-    secconf1="include hstacklet\/directive-only\/sec-bad-bots.conf;"
-    sed -i "s/secconf1/$secconf1/" /etc/nginx/conf.d/$hostname1.conf
-    secconf2="include hstacklet\/directive-only\/sec-file-injection.conf;"
-    sed -i "s/secconf2/$secconf2/" /etc/nginx/conf.d/$hostname1.conf
-    secconf3="include hstacklet\/directive-only\/sec-php-easter-eggs.conf;"
-    sed -i "s/secconf3/$secconf3/" /etc/nginx/conf.d/$hostname1.conf
+    sed -i "s/# include hstacklet\/directive-only\/sec-bad-bots.conf;/include hstacklet\/directive-only\/sec-bad-bots.conf;/" /etc/nginx/conf.d/$hostname1.conf
+    sed -i "s/# include hstacklet\/directive-only\/sec-file-injection.conf;/include hstacklet\/directive-only\/sec-file-injection.conf;/" /etc/nginx/conf.d/$hostname1.conf
+    sed -i "s/# include hstacklet\/directive-only\/sec-php-easter-eggs.conf;/include hstacklet\/directive-only\/sec-php-easter-eggs.conf;/" /etc/nginx/conf.d/$hostname1.conf
+    if [[ $cloudflare -eq yes ]];then 
+      sed -i "s/# include hstacklet\/directive-only\/cloudflare-real-ip.conf;/include hstacklet\/directive-only\/cloudflare-real-ip.conf;/" /etc/nginx/conf.d/$hostname1.conf
+    fi
+    sed -i "s/# include hstacklet\/directive-only\/cross-domain-insecure.conf;/include hstacklet\/directive-only\/cross-domain-insecure.conf;/" /etc/nginx/conf.d/$hostname1.conf
+    sed -i "s/# include hstacklet\/directive-only\/reflected-xss-prevention.conf;/include hstacklet\/directive-only\/reflected-xss-prevention.conf;/" /etc/nginx/conf.d/$hostname1.conf
+    sed -i "s/# include hstacklet\/directive-only\/mime-type-security.conf;/include hstacklet\/directive-only\/mime-type-security.conf;/" /etc/nginx/conf.d/$hostname1.conf
+    sed -i "s/# include hstacklet\/directive-only\/common-exploit-prevention.conf;/include hstacklet\/directive-only\/common-exploit-prevention.conf;/" /etc/nginx/conf.d/$hostname1.conf
+    sed -i "s/# include hstacklet\/directive-only\/timeout-handling.conf;/include hstacklet\/directive-only\/timeout-handling.conf;/" /etc/nginx/conf.d/$hostname1.conf
+    sed -i "s/# include hstacklet\/directive-only\/cache-file-descriptors.conf;/include hstacklet\/directive-only\/cache-file-descriptors.conf;/" /etc/nginx/conf.d/$hostname1.conf
   fi
   echo "${OK}"
   echo
