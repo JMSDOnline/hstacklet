@@ -94,6 +94,7 @@ function _depends() {
 # package and repo addition (c) _add signed keys_
 function _keys() {
   apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0x5a16e7281be7a449 >>"${OUTTO}" 2>&1;
+  apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xcbcb082a1bb943db >>"${OUTTO}" 2>&1;
   curl -s http://dl.hhvm.com/conf/hhvm.gpg.key | apt-key add - > /dev/null 2>&1;
   curl -s http://nginx.org/keys/nginx_signing.key | apt-key add - > /dev/null 2>&1;
   echo "${OK}"
@@ -211,7 +212,6 @@ function _hhvm() {
   /usr/share/hhvm/install_fastcgi.sh >>"${OUTTO}" 2>&1;
   update-rc.d hhvm defaults >>"${OUTTO}" 2>&1;
   /usr/bin/update-alternatives --install /usr/bin/php php /usr/bin/hhvm 60 >>"${OUTTO}" 2>&1;
-  service hhvm restart
   # get off the port and use socket - HStacklet nginx configurations already know this
   sed -i.bak -e "s/hhvm.server.port = 9000/hhvm.server.file_socket = /var/run/hhvm/hhvm.sock/" /etc/hhvm/server.ini
   # make an additional request for memory limit
@@ -276,7 +276,7 @@ function _phpmyadmin() {
     echo " - pmadbpass='${pmapass}'" >> ~/.my.cnf;
     echo '' >> ~/.my.cnf;
     echo "   Access phpMyAdmin at: " >> ~/.my.cnf;
-    echo "   http://$server_ip:8080/phpmyadmin/" >> ~/.my.cnf;
+    echo "   http://$server_ip/phpmyadmin/" >> ~/.my.cnf;
     echo '' >> ~/.my.cnf;
     echo '' >> ~/.my.cnf;
     # show mysql creds
