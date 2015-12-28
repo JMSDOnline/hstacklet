@@ -213,7 +213,7 @@ function _hhvm() {
   update-rc.d hhvm defaults >>"${OUTTO}" 2>&1;
   /usr/bin/update-alternatives --install /usr/bin/php php /usr/bin/hhvm 60 >>"${OUTTO}" 2>&1;
   # get off the port and use socket - HStacklet nginx configurations already know this
-  sed -i.bak -e "s/hhvm.server.port = 9000/hhvm.server.file_socket = /var/run/hhvm/hhvm.sock/" /etc/hhvm/server.ini
+  sed -i "s/hhvm.server.port = 9000/hhvm.server.file_socket = /var/run/hhvm/hhvm.sock/" /etc/hhvm/server.ini
   # make an additional request for memory limit
   echo "memory_limit = 512M" >> /etc/hhvm/php.ini
   echo "expose_php = off" >> /etc/hhvm/php.ini
