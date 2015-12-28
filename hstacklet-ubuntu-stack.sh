@@ -184,7 +184,8 @@ function _nginx() {
     cp /etc/nginx/conf.d/default.conf.save /etc/nginx/conf.d/$sitename.conf
     # build applications web root directory if sitename is provided
     mkdir -p /srv/www/$sitename/logs >/dev/null 2>&1;
-    mkdir -p /srv/www/$sitename/ssl >/dev/null 2>&1;
+    mkdir -p /srv/www/$sitename/ssl/certs >/dev/null 2>&1;
+    mkdir -p /srv/www/$sitename/ssl/keys >/dev/null 2>&1;
     mkdir -p /srv/www/$sitename/public >/dev/null 2>&1;
     sed -i "s/sitename/$sitename/" /etc/nginx/conf.d/$sitename.conf
     sed -i "s/sitename_access.log/$sitename_access.log/" /etc/nginx/conf.d/$sitename.conf
@@ -193,7 +194,8 @@ function _nginx() {
     cp /etc/nginx/conf.d/default.conf.save /etc/nginx/conf.d/$hostname1.conf
     # build applications web root directory if no sitename is provided
     mkdir -p /srv/www/$hostname1/logs >/dev/null 2>&1;
-    mkdir -p /srv/www/$hostname1/ssl >/dev/null 2>&1;
+    mkdir -p /srv/www/$hostname1/ssl/certs >/dev/null 2>&1;
+    mkdir -p /srv/www/$hostname1/ssl/keys >/dev/null 2>&1;
     mkdir -p /srv/www/$hostname1/public >/dev/null 2>&1;
     sed -i "s/sitename/$hostname1/" /etc/nginx/conf.d/$hostname1.conf
     sed -i "s/sitename_access.log/$hostname1_access.log/" /etc/nginx/conf.d/$hostname1.conf
@@ -565,8 +567,8 @@ function _cert() {
       sed -i -e "s/# listen [::]:443 ssl http2;/listen [::]:443 ssl http2;/" \
              -e "s/# listen *:443 ssl http2;/listen *:443 ssl http2;/" \
              -e "s/# include hstacklet\/directive-only\/ssl.conf;/include hstacklet\/directive-only\/ssl.conf;/" \
-             -e "s/# ssl_certificate \/srv\/www\/sitename\/ssl\/sitename.crt;/ssl_certificate \/srv\/www\/sitename\/ssl\/sitename.crt;/" \
-             -e "s/# ssl_certificate_key \/srv\/www\/sitename\/ssl\/sitename.key;/ssl_certificate_key \/srv\/www\/sitename\/ssl\/sitename.key;/" /etc/nginx/conf.d/$sitename.conf
+             -e "s/# ssl_certificate \/srv\/www\/sitename\/ssl\/certs\/sitename.crt;/ssl_certificate \/srv\/www\/sitename\/ssl\/certs\/sitename.crt;/" \
+             -e "s/# ssl_certificate_key \/srv\/www\/sitename\/ssl\/keys\/sitename.key;/ssl_certificate_key \/srv\/www\/sitename\/ssl\/keys\/sitename.key;/" /etc/nginx/conf.d/$sitename.conf
       sed -i "s/sitename/$sitename/" /etc/nginx/conf.d/$sitename.conf
     else
       openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /srv/www/$hostname1/ssl/$hostname1.key -out /srv/www/$hostname1/ssl/$hostname1.crt
