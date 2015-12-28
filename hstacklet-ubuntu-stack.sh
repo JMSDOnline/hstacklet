@@ -346,7 +346,7 @@ function _csf() {
     echo >> /etc/csf/csf.pignore;
     echo "[ HStacklet Additions - These are necessary to avoid noisy emails ]" >> /etc/csf/csf.pignore;
     echo "exe:/usr/sbin/mysqld" >> /etc/csf/csf.pignore;
-    echo "exe:/usr/sbin/ngninx" >> /etc/csf/csf.pignore;
+    echo "exe:/usr/sbin/nginx" >> /etc/csf/csf.pignore;
     echo "exe:/usr/sbin/varnishd" >> /etc/csf/csf.pignore;
     echo "exe:/usr/bin/hhvm" >> /etc/csf/csf.pignore;
     # modify csf conf - make suitable changes for non-cpanel environment
