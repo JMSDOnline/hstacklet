@@ -186,12 +186,18 @@ function _nginx() {
     mkdir -p /srv/www/$sitename/logs >/dev/null 2>&1;
     mkdir -p /srv/www/$sitename/ssl >/dev/null 2>&1;
     mkdir -p /srv/www/$sitename/public >/dev/null 2>&1;
+    sed -i "s/sitename/$sitename/" /etc/nginx/conf.d/$sitename.conf
+    sed -i "s/sitename_access.log/$sitename_access.log/" /etc/nginx/conf.d/$sitename.conf
+    sed -i "s/sitename_error.log/$sitename_error.log/" /etc/nginx/conf.d/$sitename.conf
   else
     cp /etc/nginx/conf.d/default.conf.save /etc/nginx/conf.d/$hostname1.conf
     # build applications web root directory if no sitename is provided
     mkdir -p /srv/www/$hostname1/logs >/dev/null 2>&1;
     mkdir -p /srv/www/$hostname1/ssl >/dev/null 2>&1;
     mkdir -p /srv/www/$hostname1/public >/dev/null 2>&1;
+    sed -i "s/sitename/$hostname1/" /etc/nginx/conf.d/$hostname1.conf
+    sed -i "s/sitename_access.log/$hostname1_access.log/" /etc/nginx/conf.d/$hostname1.conf
+    sed -i "s/sitename_error.log/$hostname1_error.log/" /etc/nginx/conf.d/$hostname1.conf
   fi
   echo "${OK}"
   echo
@@ -343,6 +349,7 @@ function _csf() {
     echo "exe:/usr/sbin/mysqld" >> /etc/csf/csf.pignore;
     echo "exe:/usr/sbin/ngninx" >> /etc/csf/csf.pignore;
     echo "exe:/usr/sbin/varnishd" >> /etc/csf/csf.pignore;
+    echo "exe:/usr/bin/hhvm" >> /etc/csf/csf.pignore;
     # modify csf conf - make suitable changes for non-cpanel environment
     sed -i.bak -e 's/TESTING = "1"/TESTING = "0"/' \
                -e 's/RESTRICT_SYSLOG = "0"/RESTRICT_SYSLOG = "3"/' \
