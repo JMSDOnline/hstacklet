@@ -590,6 +590,7 @@ function _nocert() {
 
 # finalize and restart services function (16)
 function _services() {
+  service apache2 stop >>"${OUTTO}" 2>&1;
   service nginx restart >>"${OUTTO}" 2>&1;
   service hhvm restart >>"${OUTTO}" 2>&1;
   if [[ $sendmail -eq yes ]];then 
