@@ -720,7 +720,7 @@ echo -n "${bold}Installing and Configuring Nginx${normal} ... ";_nginx
 echo -n "${bold}Adjusting Permissions${normal} ... ";_perms
 echo -n "${bold}Installing and Configuring HHVM${normal} ... ";_hhvm
 #echo -n "${bold}Installing and Adjusting PHP-FPM w/ OPCode Cache${normal} ... ";_php
-_askioncube;if [[ ${ioncube} == "yes" ]]; then _ioncube; elif [[ ${ioncube} == "no" ]]; then _noioncube;  fi
+#_askioncube;if [[ ${ioncube} == "yes" ]]; then _ioncube; elif [[ ${ioncube} == "no" ]]; then _noioncube;  fi
 echo -n "${bold}Installing MariaDB Drop-in Replacement${normal} ... ";_mariadb
 _askphpmyadmin;if [[ ${phpmyadmin} == "yes" ]]; then _phpmyadmin; elif [[ ${phpmyadmin} == "no" ]]; then _nophpmyadmin;  fi
 _askcsf;if [[ ${csf} == "yes" ]]; then _csf; elif [[ ${csf} == "no" ]]; then _nocsf;  fi
