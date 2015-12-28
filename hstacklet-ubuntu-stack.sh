@@ -651,7 +651,7 @@ _checkroot
 _logcheck
 echo -n "${bold}Installing Common Software Properties${normal} ... ";_softcommon
 echo -n "${bold}Installing: nano, unzip, dos2unix, htop, iotop, libwww-perl${normal} ... ";_depends
-echo -n "${bold}Installing signed keys for MariaDB, Nginx, and Varnish${normal} ... ";_keys
+echo -n "${bold}Installing signed keys for MariaDB, Nginx, and HHVM${normal} ... ";_keys
 echo -n "${bold}Adding trusted repositories${normal} ... ";_repos
 echo -n "${bold}Applying Updates${normal} ... ";_updates
 _asksitename;if [[ ${sitename} == "yes" ]]; then _sitename; elif [[ ${sitename} == "no" ]]; then _nositename;  fi
