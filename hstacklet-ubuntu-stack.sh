@@ -26,7 +26,7 @@ function _intro() {
   echo
   echo
   echo "  [${repo_title}hstacklet${normal}] ${title} HHVM LEMP Stack Installation ${normal}  "
-  echo "${alert} Configured and tested for 15.04 & 15.10 ${normal}"
+  echo "  ${alert} Configured and tested for Ubuntu 15.04 & 15.10 ${normal}  "
   echo
   echo
 
