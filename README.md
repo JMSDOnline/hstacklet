@@ -7,7 +7,7 @@ HStacklet - A HHVM LEMP Stack Kit
 
 #### Script status
 
-  ![script version 1.0](http://b.repl.ca/v1/script_version-1.0-446CB3.png)  ![script build passed](http://b.repl.ca/v1/script_build-passed-1E824C.png) 
+  ![script version 1.0](http://b.repl.ca/v1/script_version-1.0-446CB3.png)  ![script build passed](http://b.repl.ca/v1/script_build-passed-1E824C.png)
 
 --------
 
@@ -51,7 +51,7 @@ __HStacklet__ - (Full Kit) Installs and configures LEMP stack w/ HHVM supporting
   * Optional self-signed SSL cert configuration.
   * Easy to configure & run backup executable __hs-backup__ for data-protection.
 
-__HS-Backup__ - Installs scripts to help manage and automate server/site backups 
+__HS-Backup__ - Installs scripts to help manage and automate server/site backups
 As standalone or just use the full kit - HS-Backup is included.
   *
   * Backup your files in key locations (ex: /srv/www /etc /root)
@@ -71,9 +71,9 @@ __Setup__ should be run as __root__ on a fresh __Ubuntu__ installation. __Stack_
 
 If components are already installed, the core packages can be removed with:
 ```
-apt-get purge apache mysql apache2-mpm-prefork apache2-utils apache2.2-bin apache2.2-common \
+apt-get purge apache2 mysql apache2-mpm-prefork apache2-utils apache2.2-bin apache2.2-common \
 libapache2-mod-php5 libapr1 libaprutil1 libdbd-mysql-perl libdbi-perl libnet-daemon-perl \
-libplrpc-perl libpq5 mysql-client-5.5 mysql-common mysql-server mysql-server-5.5 php5-common \ 
+libplrpc-perl libpq5 mysql-client-5.5 mysql-common mysql-server mysql-server-5.5 php5-common \
 php5-mysql
 apt-get autoclean
 apt-get autoremove
