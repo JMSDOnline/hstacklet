@@ -50,7 +50,7 @@ function _askhstacklet() {
   echo "${bold} Actively maintained and quality controlled.${normal}"
   echo
   echo
-  echo -n "${bold}${yellow}Are you ready to install HStacklet for Ubuntu 15.x ?${normal} (${bold}${green}Y${normal}/n): "
+  echo -n "${bold}${yellow}Are you ready to install HStacklet for Ubuntu 15.x-16.04 ?${normal} (${bold}${green}Y${normal}/n): "
   read responce
   case $responce in
     [yY] | [yY][Ee][Ss] | "" ) hstacklet=yes ;;

@@ -26,7 +26,7 @@ function _intro() {
   echo
   echo
   echo "  [${repo_title}hstacklet${normal}] ${title} HHVM LEMP Stack Installation ${normal}  "
-  echo "  ${alert} Configured and tested for Ubuntu 15.04 & 15.10 ${normal}  "
+  echo "  ${alert} Configured and tested for Ubuntu 15.04 - 16.04 ${normal}  "
   echo
   echo
 
@@ -44,7 +44,7 @@ function _intro() {
     echo "${dis}: You do not appear to be running Ubuntu"
     echo 'Exiting...'
     exit 1
-  elif [[ ! "${rel}" =~ ("15.04"|"15.10") ]]; then
+  elif [[ ! "${rel}" =~ ("15.04"|"15.10"|"16.04") ]]; then
     echo "${bold}${rel}:${normal} You do not appear to be running a supported Ubuntu release."
     echo 'Exiting...'
     exit 1
@@ -105,7 +105,7 @@ function _keys() {
 # package and repo addition (d) _add respo sources_
 function _repos() {
   cat >/etc/apt/sources.list.d/mariadb.list<<EOF
-deb http://mirrors.syringanetworks.net/mariadb/repo/10.0/ubuntu $(lsb_release -sc) main
+deb http://mirrors.syringanetworks.net/mariadb/repo/10.2/ubuntu/ $(lsb_release -sc) main
 EOF
   cat >/etc/apt/sources.list.d/hhvm.list<<EOF
 deb http://dl.hhvm.com/ubuntu $(lsb_release -sc) main
@@ -177,7 +177,7 @@ function _nginx() {
   rm -rf hstacklet-server-configs*
   cp /etc/nginx-previous/uwsgi_params /etc/nginx-previous/fastcgi_params /etc/nginx >>"${OUTTO}" 2>&1;
   # rename default.conf template
-  if [[ $sitename -eq yes ]];then 
+  if [[ $sitename -eq yes ]];then
     cp /etc/nginx/conf.d/default.conf.save /etc/nginx/conf.d/$sitename.conf
     # build applications web root directory if sitename is provided
     mkdir -p /srv/www/$sitename/logs >/dev/null 2>&1;
@@ -222,7 +222,7 @@ function _hhvm() {
   # make an additional request for memory limit
   echo "memory_limit = 512M" >> /etc/hhvm/php.ini
   echo "expose_php = off" >> /etc/hhvm/php.ini
-  if [[ $sitename -eq yes ]];then 
+  if [[ $sitename -eq yes ]];then
     echo '<?php phpinfo(); ?>' > /srv/www/$sitename/public/checkinfo.php
   else
     echo '<?php phpinfo(); ?>' > /srv/www/$hostname1/public/checkinfo.php
@@ -265,7 +265,7 @@ function _phpmyadmin() {
     echo "phpmyadmin phpmyadmin/app-password-confirm password ${pmapass}" | debconf-set-selections
     echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect none" | debconf-set-selections
     apt-get -y install phpmyadmin >>"${OUTTO}" 2>&1;
-    if [[ $sitename -eq yes ]];then 
+    if [[ $sitename -eq yes ]];then
       # create a sym-link to live directory.
       ln -s /usr/share/phpmyadmin /srv/www/$sitename/public
     else
@@ -304,7 +304,7 @@ function _phpmyadmin() {
 function _nophpmyadmin() {
   if [[ ${phpmyadmin} == "no" ]]; then
     echo "${cyan}Skipping phpMyAdmin Installation...${normal}"
-    echo 
+    echo
   fi
 }
 
@@ -393,7 +393,7 @@ root: $admin_email" > /etc/aliases
 function _nocsf() {
   if [[ ${csf} == "no" ]]; then
     echo "${cyan}Skipping Config Server Firewall Installation${normal} ... "
-    echo 
+    echo
   fi
 }
 
@@ -481,7 +481,7 @@ root: $admin_email" > /etc/aliases
 function _nosendmail() {
   if [[ ${sendmail} == "no" ]]; then
     echo "${cyan}Skipping Sendmail Installation...${normal}"
-    echo 
+    echo
   fi
 }
 
@@ -490,10 +490,10 @@ function _nosendmail() {
 # measures to protect against common exploits.
 # Enhancements covered are adding cache busting, cross domain
 # font support, expires tags and protecting system files.
-# 
+#
 # You can find the included files at the following directory...
 # /etc/nginx/hstacklet/
-# 
+#
 # Not all profiles are included, review your $sitename.conf
 # for additions made by the script & adjust accordingly.
 #################################################################
@@ -501,7 +501,7 @@ function _nosendmail() {
 # Round 1 - Location
 # enhance configuration function (13)
 function _locenhance() {
-  if [[ $sitename -eq yes ]];then 
+  if [[ $sitename -eq yes ]];then
     sed -i "s/# include hstacklet\/location\/cache-busting.conf;/include hstacklet\/location\/cache-busting.conf;/" /etc/nginx/conf.d/$sitename.conf
     sed -i "s/# include hstacklet\/location\/cross-domain-fonts.conf;/include hstacklet\/location\/cross-domain-fonts.conf;/" /etc/nginx/conf.d/$sitename.conf
     sed -i "s/# include hstacklet\/location\/expires.conf;/include hstacklet\/location\/expires.conf;/" /etc/nginx/conf.d/$sitename.conf
@@ -513,17 +513,17 @@ function _locenhance() {
     sed -i "s/# include hstacklet\/location\/protect-system-files.conf;/include hstacklet\/location\/protect-system-files.conf;/" /etc/nginx/conf.d/$hostname1.conf
   fi
   echo "${OK}"
-  echo 
+  echo
 }
 
 # Round 2 - Security
 # optimize security configuration function (14)
 function _security() {
-  if [[ $sitename -eq yes ]];then 
+  if [[ $sitename -eq yes ]];then
     sed -i "s/# include hstacklet\/directive-only\/sec-bad-bots.conf;/include hstacklet\/directive-only\/sec-bad-bots.conf;/" /etc/nginx/conf.d/$sitename.conf
     sed -i "s/# include hstacklet\/directive-only\/sec-file-injection.conf;/include hstacklet\/directive-only\/sec-file-injection.conf;/" /etc/nginx/conf.d/$sitename.conf
     sed -i "s/# include hstacklet\/directive-only\/sec-php-easter-eggs.conf;/include hstacklet\/directive-only\/sec-php-easter-eggs.conf;/" /etc/nginx/conf.d/$sitename.conf
-    if [[ $cloudflare -eq yes ]];then 
+    if [[ $cloudflare -eq yes ]];then
       sed -i "s/# include hstacklet\/directive-only\/cloudflare-real-ip.conf;/include hstacklet\/directive-only\/cloudflare-real-ip.conf;/" /etc/nginx/conf.d/$sitename.conf
     fi
     sed -i "s/# include hstacklet\/directive-only\/cross-domain-insecure.conf;/include hstacklet\/directive-only\/cross-domain-insecure.conf;/" /etc/nginx/conf.d/$sitename.conf
@@ -536,7 +536,7 @@ function _security() {
     sed -i "s/# include hstacklet\/directive-only\/sec-bad-bots.conf;/include hstacklet\/directive-only\/sec-bad-bots.conf;/" /etc/nginx/conf.d/$hostname1.conf
     sed -i "s/# include hstacklet\/directive-only\/sec-file-injection.conf;/include hstacklet\/directive-only\/sec-file-injection.conf;/" /etc/nginx/conf.d/$hostname1.conf
     sed -i "s/# include hstacklet\/directive-only\/sec-php-easter-eggs.conf;/include hstacklet\/directive-only\/sec-php-easter-eggs.conf;/" /etc/nginx/conf.d/$hostname1.conf
-    if [[ $cloudflare -eq yes ]];then 
+    if [[ $cloudflare -eq yes ]];then
       sed -i "s/# include hstacklet\/directive-only\/cloudflare-real-ip.conf;/include hstacklet\/directive-only\/cloudflare-real-ip.conf;/" /etc/nginx/conf.d/$hostname1.conf
     fi
     sed -i "s/# include hstacklet\/directive-only\/cross-domain-insecure.conf;/include hstacklet\/directive-only\/cross-domain-insecure.conf;/" /etc/nginx/conf.d/$hostname1.conf
@@ -562,7 +562,7 @@ function _askcert() {
 
 function _cert() {
   if [[ ${cert} == "yes" ]]; then
-    if [[ $sitename -eq yes ]];then 
+    if [[ $sitename -eq yes ]];then
       openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/$sitename.key -out /etc/ssl/certs/$sitename.crt
       chmod 400 /etc/ssl/private/$sitename.key
       sed -i -e "s/# listen [::]:443 ssl http2;/listen [::]:443 ssl http2;/" \
@@ -588,13 +588,13 @@ function _cert() {
 
 function _nocert() {
   if [[ ${cert} == "no" ]]; then
-    if [[ $sitename -eq yes ]];then 
+    if [[ $sitename -eq yes ]];then
       sed -i "s/sitename/$sitename/" /etc/nginx/conf.d/$sitename.conf
     else
       sed -i "s/sitename/$hostname1/" /etc/nginx/conf.d/$hostname1.conf
     fi
     echo "${cyan}Skipping SSL Certificate Creation...${normal}"
-    echo 
+    echo
   fi
 }
 
@@ -603,10 +603,10 @@ function _services() {
   service apache2 stop >>"${OUTTO}" 2>&1;
   service nginx restart >>"${OUTTO}" 2>&1;
   service hhvm restart >>"${OUTTO}" 2>&1;
-  if [[ $sendmail -eq yes ]];then 
+  if [[ $sendmail -eq yes ]];then
     service sendmail restart >>"${OUTTO}" 2>&1;
   fi
-  if [[ $csf -eq yes ]];then 
+  if [[ $csf -eq yes ]];then
     service lfd restart >>"${OUTTO}" 2>&1;
     csf -r >>"${OUTTO}" 2>&1;
   fi
@@ -672,10 +672,10 @@ echo -n "${bold}Installing and Configuring HHVM${normal} ... ";_hhvm
 echo -n "${bold}Installing MariaDB Drop-in Replacement${normal} ... ";_mariadb
 _askphpmyadmin;if [[ ${phpmyadmin} == "yes" ]]; then _phpmyadmin; elif [[ ${phpmyadmin} == "no" ]]; then _nophpmyadmin;  fi
 _askcsf;if [[ ${csf} == "yes" ]]; then _csf; elif [[ ${csf} == "no" ]]; then _nocsf;  fi
-if [[ ${csf} == "yes" ]]; then 
+if [[ ${csf} == "yes" ]]; then
   _askcloudflare;if [[ ${cloudflare} == "yes" ]]; then _cloudflare;  fi
 fi
-if [[ ${csf} == "no" ]]; then 
+if [[ ${csf} == "no" ]]; then
   _asksendmail;if [[ ${sendmail} == "yes" ]]; then _sendmail; elif [[ ${sendmail} == "no" ]]; then _nosendmail;  fi
 fi
 echo "${bold}Addressing Location Edits: cache busting, cross domain font support,${normal}";
